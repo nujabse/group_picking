@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>加入小组 | 学生端</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body class="student">
+    <header class="container">
+      <h1>加入小组</h1>
+      <p class="subtitle">请输入姓名加入，若填错可撤销重新加入。</p>
+    </header>
+
+    <main class="container grid">
+      <section class="card">
+        <h2>我的状态</h2>
+        <form id="joinForm">
+          <label for="name">姓名</label>
+          <input id="name" name="name" type="text" placeholder="请输入姓名" required />
+          <div class="actions-row">
+            <button id="joinBtn" type="submit">提交加入</button>
+            <button id="leaveBtn" type="button" class="secondary">撤销加入</button>
+          </div>
+        </form>
+        <div id="myGroup" class="my-group hidden"></div>
+      </section>
+
+      <section class="card wide">
+        <div class="board-header">
+          <h2>当前分组</h2>
+          <div id="stats" class="stats"></div>
+        </div>
+        <div id="groups" class="groups"></div>
+      </section>
+    </main>
+
+    <script src="/public/student.js"></script>
+  </body>
+  </html>
+

@@ -1,0 +1,37 @@
+:root{
+  --bg:#0b0c10;--card:#15171e;--muted:#8892b0;--text:#e6edf3;--primary:#2dd4bf;--accent:#60a5fa;--danger:#f87171;--border:#23262f
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--text)}
+body.student{font-size:18px}
+.container{max-width:1100px;margin:0 auto;padding:16px}
+.subtitle{color:var(--muted);margin-top:-8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card.wide{grid-column:1/-1}
+h1,h2{margin:0 0 12px 0}
+label{display:block;margin:8px 0 6px}
+input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:#0f1116;color:var(--text)}
+button{margin-top:12px;padding:10px 14px;border:none;border-radius:8px;background:var(--primary);color:#061015;font-weight:600;cursor:pointer}
+button.secondary{background:#1f2430;color:var(--text);border:1px solid var(--border)}
+button:disabled{opacity:.6;cursor:not-allowed}
+.qrcode-box{display:flex;align-items:center;justify-content:center;min-height:280px;background:#0f1116;border:1px dashed var(--border);border-radius:8px}
+.muted{color:var(--muted)}
+#pageUrl{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:var(--accent)}
+.groups{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}
+@media (max-width: 980px){.groups{grid-template-columns:repeat(3,1fr)}}
+@media (max-width: 640px){.grid{grid-template-columns:1fr}.groups{grid-template-columns:1fr}}
+.group{background:#0f1116;border:1px solid var(--border);border-radius:10px;padding:10px}
+.group h3{margin:0 0 8px 0;font-size:16px;color:#cbd5e1}
+.member{background:#151a22;border:1px solid #222630;border-radius:8px;padding:8px 10px;margin:8px 0;font-size:16px;line-height:1.35}
+.cap{font-size:12px;color:var(--muted)}
+.stats{color:var(--muted)}
+.my-group{margin-top:10px;padding:10px;border-radius:8px;background:#11221f;border:1px solid #1f3f34}
+.my-group strong{color:#86efac}
+.my-group.hidden{display:none}
+.board-header{display:flex;align-items:center;justify-content:space-between}
+
+.actions-row{display:flex;gap:8px;align-items:center}
+.student .group h3{font-size:18px}
+.student .member{font-size:18px}

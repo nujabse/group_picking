@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>扫码组队 | 6-7 人小组</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="container">
+      <h1>扫码组队（6 或 7 人一组，共 44 人）</h1>
+      <p class="subtitle">同一局域网内，学生扫描二维码进入页面，填写姓名即可自动分组。</p>
+    </header>
+
+    <main class="container grid">
+      <section class="card">
+        <h2>二维码</h2>
+        <div id="qrcode" class="qrcode-box"></div>
+        <p class="muted">或直接访问：<span id="pageUrl"></span></p>
+      </section>
+
+      <section class="card">
+        <h2>加入小组</h2>
+        <form id="joinForm">
+          <label for="name">姓名</label>
+          <input id="name" name="name" type="text" placeholder="请输入姓名" required />
+          <button type="submit">提交加入</button>
+        </form>
+        <div id="myGroup" class="my-group hidden"></div>
+        <div class="actions">
+          <button id="resetBtn" class="secondary">重置所有分组</button>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <div class="board-header">
+          <h2>当前分组</h2>
+          <div id="stats" class="stats"></div>
+        </div>
+        <div id="groups" class="groups"></div>
+      </section>
+    </main>
+
+    <script src="/public/lib/qrcode.min.js"></script>
+    <script src="/public/app.js"></script>
+  </body>
+  </html>
+
