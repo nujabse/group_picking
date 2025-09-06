@@ -19,11 +19,13 @@ const CAPACITIES = [7, 7, 6, 6, 6, 6, 6];
 let state = {
   students: [], // { name, groupId, at }
   groups: [],   // { id, capacity, members: [name] }
+  devices: {},  // { [deviceId]: name }
 };
 
 function initEmptyState() {
   state.students = [];
   state.groups = CAPACITIES.map((cap, idx) => ({ id: idx + 1, capacity: cap, members: [] }));
+  state.devices = {};
 }
 
 async function ensureDataDir() {
@@ -40,6 +42,7 @@ async function loadState() {
     // Lightweight validation
     if (Array.isArray(obj.groups) && Array.isArray(obj.students)) {
       state = obj;
+      if (!state.devices || typeof state.devices !== 'object') state.devices = {};
       reconcileState();
       return;
     }
@@ -320,14 +323,23 @@ const server = http.createServer(async (req, res) => {
       const body = await parseBody(req);
       const name = normalizeName(body.name);
       const groupId = body.groupId != null ? Number(body.groupId) : null;
+      const deviceId = String(body.deviceId || '').trim();
       if (!name) return badRequest(res, '请填写有效的姓名');
+      if (deviceId) {
+        const bound = state.devices[deviceId];
+        if (bound && bound.toLowerCase() !== name.toLowerCase()) {
+          return sendJSON(res, 200, { ok: false, error: '该设备已绑定其他姓名，如需更改请联系教师' });
+        }
+      }
       const result = assignToGroup(name, groupId);
       if (result.status === 'ok' || result.status === 'exists') {
+        if (deviceId && !state.devices[deviceId]) state.devices[deviceId] = name;
         await saveState();
         broadcast();
         return sendJSON(res, 200, { ok: true, groupId: result.groupId, status: result.status });
       }
       if (result.status === 'moved') {
+        if (deviceId && !state.devices[deviceId]) state.devices[deviceId] = name;
         await saveState();
         broadcast();
         return sendJSON(res, 200, { ok: true, groupId: result.groupId, status: result.status });

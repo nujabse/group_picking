@@ -2,15 +2,37 @@
   const $ = (sel) => document.querySelector(sel);
   const groupsEl = $('#groups');
   const statsEl = $('#stats');
-  const joinForm = $('#joinForm');
   const nameInput = $('#name');
-  const joinBtn = $('#joinBtn');
+  const saveNameBtn = $('#saveNameBtn');
+  const nameModal = $('#nameModal');
   const leaveBtn = $('#leaveBtn');
   const myGroup = $('#myGroup');
+  const myNameEl = $('#myName');
 
-  // Persist name locally for convenience and status detection
-  const savedName = localStorage.getItem('gp:name') || '';
-  if (savedName) nameInput.value = savedName;
+  // Stable device ID for bind-once
+  function uuid() {
+    if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    return 'xxxxxx-xxxx-4xxx-yxxx-xxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  const deviceId = localStorage.getItem('gp:device') || (() => {
+    const id = uuid();
+    localStorage.setItem('gp:device', id);
+    return id;
+  })();
+
+  // Persisted name: required before joining
+  let savedName = localStorage.getItem('gp:name') || '';
+  if (savedName) {
+    myNameEl.textContent = `本机姓名：${savedName}`;
+    nameModal.classList.add('hidden');
+  } else {
+    nameModal.classList.remove('hidden');
+    nameInput && nameInput.focus();
+  }
 
   function escapeHTML(s) {
     return String(s)
@@ -22,7 +44,7 @@
   }
 
   function updateMyGroupFromState(state) {
-    const name = (nameInput.value || '').trim();
+    const name = savedName.trim();
     if (!name) {
       myGroup.classList.add('hidden');
       myGroup.textContent = '';
@@ -46,7 +68,7 @@
   function render(state) {
     const { groups, counts } = state;
     statsEl.textContent = `已加入 ${counts.joined} / 44，剩余 ${counts.remaining}`;
-    const myName = (nameInput.value || '').trim();
+    const myName = savedName.trim();
     const lowerMy = myName.toLowerCase();
     groupsEl.innerHTML = groups
       .map(g => {
@@ -55,14 +77,14 @@
         const isMine = myName && g.members.some(n => n.toLowerCase() === lowerMy);
         const members = g.members.map(n => `<div class="member">${escapeHTML(n)}</div>`).join('');
         const btnLabel = isMine ? '已加入' : (remaining > 0 ? `加入第 ${g.id} 组` : '已满');
-        const disabled = isMine || remaining <= 0 ? 'disabled' : '';
+        const disabled = (!myName) || isMine || remaining <= 0 ? 'disabled' : '';
         return `
           <div class="group">
+            <div class="actions-row" style="margin:0 0 8px 0">
+              <button class="join-btn" data-join="${g.id}" ${disabled}>${btnLabel}</button>
+            </div>
             <h3>第 ${g.id} 组 <span class="cap">${capText}</span></h3>
             ${members}
-            <div class="actions-row">
-              <button class="secondary" data-join="${g.id}" ${disabled}>${btnLabel}</button>
-            </div>
           </div>`;
       })
       .join('');
@@ -80,32 +102,19 @@
     };
   } catch {}
 
-  joinForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = nameInput.value.trim();
-    if (!name) return;
-    joinBtn.disabled = true;
-    leaveBtn.disabled = true;
-    try {
-      const res = await fetch('/join', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        localStorage.setItem('gp:name', name);
-        myGroup.classList.remove('hidden');
-        myGroup.innerHTML = `已加入 <strong>第 ${data.groupId} 组</strong>`;
-      } else {
-        alert(data.error || '加入失败');
-      }
-    } catch (e) {
-      alert('网络错误');
-    } finally {
-      joinBtn.disabled = false;
-      leaveBtn.disabled = false;
+  // Save name once via modal
+  saveNameBtn.addEventListener('click', () => {
+    const name = (nameInput && nameInput.value || '').trim();
+    if (!name) {
+      nameInput && nameInput.focus();
+      return;
     }
+    savedName = name;
+    localStorage.setItem('gp:name', name);
+    myNameEl.textContent = `本机姓名：${name}`;
+    nameModal.classList.add('hidden');
+    // Rerender to enable buttons
+    fetch('/state').then(r => r.json()).then(render).catch(() => {});
   });
 
   // Join a specific group via inline buttons
@@ -113,20 +122,18 @@
     const btn = e.target.closest('[data-join]');
     if (!btn) return;
     const groupId = Number(btn.getAttribute('data-join'));
-    const name = nameInput.value.trim();
+    const name = (localStorage.getItem('gp:name') || '').trim();
     if (!name) {
-      alert('请先填写姓名');
-      nameInput.focus();
+      nameModal.classList.remove('hidden');
+      nameInput && nameInput.focus();
       return;
     }
-    joinBtn.disabled = true;
-    leaveBtn.disabled = true;
     btn.disabled = true;
     try {
       const res = await fetch('/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, groupId }),
+        body: JSON.stringify({ name, groupId, deviceId }),
       });
       const data = await res.json();
       if (data.ok) {
@@ -139,21 +146,19 @@
     } catch (err) {
       alert('网络错误');
     } finally {
-      joinBtn.disabled = false;
-      leaveBtn.disabled = false;
+      btn.disabled = false;
     }
   });
 
   leaveBtn.addEventListener('click', async () => {
-    const name = nameInput.value.trim();
+    const name = (localStorage.getItem('gp:name') || '').trim();
     if (!name) return alert('请先填写姓名');
-    joinBtn.disabled = true;
     leaveBtn.disabled = true;
     try {
       const res = await fetch('/leave', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, deviceId }),
       });
       const data = await res.json();
       if (!data.ok) {
@@ -165,7 +170,6 @@
     } catch (e) {
       alert('网络错误');
     } finally {
-      joinBtn.disabled = false;
       leaveBtn.disabled = false;
     }
   });

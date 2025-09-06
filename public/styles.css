@@ -14,6 +14,7 @@ h1,h2{margin:0 0 12px 0}
 label{display:block;margin:8px 0 6px}
 input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:#0f1116;color:var(--text)}
 button{margin-top:12px;padding:10px 14px;border:none;border-radius:8px;background:var(--primary);color:#061015;font-weight:600;cursor:pointer}
+button.primary{background:var(--accent);color:#061015}
 button.secondary{background:#1f2430;color:var(--text);border:1px solid var(--border)}
 button:disabled{opacity:.6;cursor:not-allowed}
 .qrcode-box{display:flex;align-items:center;justify-content:center;min-height:280px;background:#0f1116;border:1px dashed var(--border);border-radius:8px}
@@ -35,3 +36,11 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .actions-row{display:flex;gap:8px;align-items:center}
 .student .group h3{font-size:18px}
 .student .member{font-size:18px}
+.join-btn{background:var(--accent);color:#061015;font-weight:700;border:2px solid #6ea8fe}
+.join-btn:disabled{opacity:.6;filter:saturate(.5)}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal.hidden{display:none}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;max-width:360px;width:92%}
+.my-name{margin-bottom:8px}

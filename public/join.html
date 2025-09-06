@@ -9,20 +9,16 @@
   <body class="student">
     <header class="container">
       <h1>加入小组</h1>
-      <p class="subtitle">请输入姓名加入，若填错可撤销重新加入。</p>
+      <p class="subtitle">首次进入请输入姓名；之后可选择小组或撤销加入。</p>
     </header>
 
     <main class="container grid">
       <section class="card">
         <h2>我的状态</h2>
-        <form id="joinForm">
-          <label for="name">姓名</label>
-          <input id="name" name="name" type="text" placeholder="请输入姓名" required />
-          <div class="actions-row">
-            <button id="joinBtn" type="submit">提交加入</button>
-            <button id="leaveBtn" type="button" class="secondary">撤销加入</button>
-          </div>
-        </form>
+        <div id="myName" class="my-name muted"></div>
+        <div class="actions-row">
+          <button id="leaveBtn" type="button" class="secondary">撤销加入</button>
+        </div>
         <div id="myGroup" class="my-group hidden"></div>
       </section>
 
@@ -35,7 +31,18 @@
       </section>
     </main>
 
+    <!-- 姓名输入弹窗 -->
+    <div id="nameModal" class="modal hidden">
+      <div class="modal-card">
+        <h3>请输入姓名</h3>
+        <p class="muted">姓名将与本设备绑定，仅用于本次分组。</p>
+        <input id="name" type="text" placeholder="请输入姓名" />
+        <div class="actions-row">
+          <button id="saveNameBtn" class="primary">确认</button>
+        </div>
+      </div>
+    </div>
+
     <script src="/public/student.js"></script>
   </body>
   </html>
-
