@@ -8,6 +8,7 @@ body.student{font-size:18px}
 .container{max-width:1100px;margin:0 auto;padding:16px}
 .subtitle{color:var(--muted);margin-top:-8px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.grid.teacher{grid-template-columns:1fr 2fr}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
 .card.wide{grid-column:1/-1}
 h1,h2{margin:0 0 12px 0}
@@ -34,6 +35,10 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .my-group strong{color:#86efac}
 .my-group.hidden{display:none}
 .board-header{display:flex;align-items:center;justify-content:space-between}
+.actions{display:flex;align-items:center;gap:12px}
+
+/* Buttons */
+button.danger{background:var(--danger);color:#061015}
 
 .actions-row{display:flex;gap:8px;align-items:center}
 .student .group h3{font-size:18px}

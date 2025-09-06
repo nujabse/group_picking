@@ -12,17 +12,20 @@
       <p class="subtitle">同一局域网内，学生扫描二维码进入页面，填写姓名即可自动分组。</p>
     </header>
 
-    <main class="container grid">
+    <main class="container grid teacher">
       <section class="card">
         <h2>二维码</h2>
         <div id="qrcode" class="qrcode-box"></div>
         <p class="muted">或直接访问：<span id="pageUrl"></span></p>
       </section>
 
-      <section class="card wide">
+      <section class="card">
         <div class="board-header">
           <h2>当前分组</h2>
-          <div id="stats" class="stats"></div>
+          <div class="actions">
+            <div id="stats" class="stats"></div>
+            <button id="resetBtn" class="secondary danger">重置所有分组</button>
+          </div>
         </div>
         <div id="groups" class="groups"></div>
       </section>

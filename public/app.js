@@ -6,6 +6,7 @@
   const pageUrlEl = $('#pageUrl');
   const groupsEl = $('#groups');
   const statsEl = $('#stats');
+  const resetBtn = document.getElementById('resetBtn');
 
   // Teacher view should share the student URL (no QR on student page)
   const studentUrl = window.location.origin + '/join';
@@ -63,4 +64,24 @@
   } catch {}
 
   // Teacher page no longer supports join/reset; it’s a display board only
+  if (resetBtn) {
+    resetBtn.addEventListener('click', async () => {
+      const ok = confirm('确定要重置所有分组吗？此操作不可撤销。');
+      if (!ok) return;
+      const token = prompt('如需设置管理员口令，默认留空或输入 teacher：', 'teacher') || '';
+      try {
+        const res = await fetch('/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          alert(data.error || '重置失败');
+        }
+      } catch (e) {
+        alert('网络错误');
+      }
+    });
+  }
 })();
