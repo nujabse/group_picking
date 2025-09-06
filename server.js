@@ -20,12 +20,14 @@ let state = {
   students: [], // { name, groupId, at }
   groups: [],   // { id, capacity, members: [name] }
   devices: {},  // { [deviceId]: name }
+  lastJoin: null, // { name, groupId, at }
 };
 
 function initEmptyState() {
   state.students = [];
   state.groups = CAPACITIES.map((cap, idx) => ({ id: idx + 1, capacity: cap, members: [] }));
   state.devices = {};
+  state.lastJoin = null;
 }
 
 async function ensureDataDir() {
@@ -43,6 +45,7 @@ async function loadState() {
     if (Array.isArray(obj.groups) && Array.isArray(obj.students)) {
       state = obj;
       if (!state.devices || typeof state.devices !== 'object') state.devices = {};
+      if (!state.lastJoin || typeof state.lastJoin !== 'object') state.lastJoin = null;
       reconcileState();
       return;
     }
@@ -104,11 +107,14 @@ function assignToGroup(name, targetGroupId = null) {
       target.members.push(name);
       existing.groupId = target.id;
       existing.at = Date.now();
+      state.lastJoin = { name, groupId: target.id, at: existing.at };
       return { status: 'moved', groupId: target.id };
     } else {
       if (remaining <= 0) return { status: 'full', groupId: target.id };
       target.members.push(name);
-      state.students.push({ name, groupId: target.id, at: Date.now() });
+      const at = Date.now();
+      state.students.push({ name, groupId: target.id, at });
+      state.lastJoin = { name, groupId: target.id, at };
       return { status: 'ok', groupId: target.id };
     }
   }
@@ -131,6 +137,7 @@ function assignToGroup(name, targetGroupId = null) {
   chosen.members.push(name);
   const student = { name, groupId: chosen.id, at: Date.now() };
   state.students.push(student);
+  state.lastJoin = { name, groupId: chosen.id, at: student.at };
   return { status: 'ok', groupId: chosen.id };
 }
 
@@ -143,6 +150,7 @@ function removeFromGroup(name) {
   if (g) {
     g.members = g.members.filter(n => n.toLowerCase() !== String(name).toLowerCase());
   }
+  // Do not set lastJoin on leave; it's for highlighting joins
   return { status: 'ok', groupId };
 }
 
@@ -178,6 +186,7 @@ function publicState() {
       joined: state.students.length,
       remaining: TOTAL_STUDENTS - state.students.length,
     },
+    lastJoin: state.lastJoin,
   };
 }
 

@@ -79,9 +79,9 @@
         const btnLabel = isMine ? '已加入' : (remaining > 0 ? `加入第 ${g.id} 组` : '已满');
         const disabled = (!myName) || isMine || remaining <= 0 ? 'disabled' : '';
         return `
-          <div class="group">
+          <div class="group${isMine ? ' current' : ''}">
             <div class="actions-row" style="margin:0 0 8px 0">
-              <button class="join-btn" data-join="${g.id}" ${disabled}>${btnLabel}</button>
+              <button class="join-btn" data-join="${g.id}" ${disabled}>${btnLabel}<span class="badge">剩余 ${remaining}</span></button>
             </div>
             <h3>第 ${g.id} 组 <span class="cap">${capText}</span></h3>
             ${members}
@@ -174,4 +174,3 @@
     }
   });
 })();
-
